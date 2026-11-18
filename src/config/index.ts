@@ -8,6 +8,7 @@ dotenv.config({
 const config = {
   port: process.env.PORT,
   connation_string: process.env.DATABASE_URL as string,
+  jwt_key: process.env.JWTKEY,
 };
 
 export default config;

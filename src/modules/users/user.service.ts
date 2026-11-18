@@ -1,3 +1,4 @@
+import { hash } from "bcrypt-ts";
 import { pool } from "../../db";
 import type { Iuser, UpUser } from "./user.interface";
 
@@ -6,13 +7,17 @@ const createUserIntoDB = async (payload: Iuser) => {
   const { name, email, password, age } = payload;
   //   console.log(password);
 
+  const hashPass = await hash(password, 10);
+  // console.log(hashPass);
+
   const result = await pool.query(
     `
     INSERT INTO users(name, email, password,age) VALUES
     ($1,$2,$3,$4) RETURNING *
     `,
-    [name, email, password, age],
+    [name, email, hashPass, age],
   );
+  delete result.rows[0].password;
   return result;
 };
 
@@ -42,7 +47,7 @@ const updateSingleUserIntoDB = async (payload: Partial<UpUser>, id: string) => {
     name = COALESCE($1, name),
     password = COALESCE($2 ,password),
     age = COALESCE($3, age),
-    is_Active= COALESCE($4, is_Active),
+    is_Active = COALESCE($4, is_Active),
     updated_at = NOW()
     WHERE id = $5 RETURNING *
       `,
