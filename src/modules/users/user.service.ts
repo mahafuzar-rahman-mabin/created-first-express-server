@@ -4,18 +4,18 @@ import type { Iuser, UpUser } from "./user.interface";
 
 const createUserIntoDB = async (payload: Iuser) => {
   //   console.log(req.body);
-  const { name, email, password, age } = payload;
-  //   console.log(password);
+  const { name, email, password, age, role } = payload;
+  // console.log(res.user);
 
   const hashPass = await hash(password, 10);
   // console.log(hashPass);
 
   const result = await pool.query(
     `
-    INSERT INTO users(name, email, password,age) VALUES
-    ($1,$2,$3,$4) RETURNING *
+    INSERT INTO users(name, email, password,age, role) VALUES
+    ($1,$2,$3,$4, COALESCE($5, 'user')) RETURNING *
     `,
-    [name, email, hashPass, age],
+    [name, email, hashPass, age, role],
   );
   delete result.rows[0].password;
   return result;

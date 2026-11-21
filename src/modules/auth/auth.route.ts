@@ -6,3 +6,4 @@ const router = Router();
 export const authRouter = router;
 
 router.post("/login", authCenter.createAuth);
+router.post("/refresh-token", authCenter.createToken);
